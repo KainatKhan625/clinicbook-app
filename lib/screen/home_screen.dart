@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4FF),
       body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(), 
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
             Container(
@@ -134,9 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 12),
                   ..._doctors
                       .where((d) =>
-    _searchQuery.isEmpty ||
-    d['name'].toLowerCase().contains(_searchQuery) ||
-    d['specialty'].toLowerCase().contains(_searchQuery))
+                          _searchQuery.isEmpty ||
+                          d['name'].toLowerCase().contains(_searchQuery) ||
+                          d['specialty'].toLowerCase().contains(_searchQuery))
                       .map((d) => Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _doctorCard(d['name'], d['specialty'], d['rating'], d['patients'], context),
@@ -197,18 +197,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: const Icon(Icons.medical_services, color: Color(0xFF4B7BF5), size: 24),
                                 ),
                                 const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(data['service'] ?? '',
-                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1A1A2E))),
-                                    Text('${data['date']} at ${data['time']}',
-                                        style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                                    Text(data['name'] ?? '',
-                                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                                  ],
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(data['service'] ?? '',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1A1A2E))),
+                                      Text('${data['date']} at ${data['time']}',
+                                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                                      Text(data['name'] ?? '',
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                    ],
+                                  ),
                                 ),
-                                const Spacer(),
+                                const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
@@ -217,6 +219,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   child: const Text('Pending',
                                       style: TextStyle(color: Color(0xFF4B7BF5), fontSize: 12, fontWeight: FontWeight.w500)),
+                                ),
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () async {
+                                    await FirebaseFirestore.instance
+                                        .collection('bookings')
+                                        .doc(docs[index].id)
+                                        .delete();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Text('Cancel',
+                                        style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w500)),
+                                  ),
                                 ),
                               ],
                             ),
@@ -268,14 +288,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
-    );
-  },
-  child: _navItem(Icons.person_outline, 'Profile', false),
-),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
+              },
+              child: _navItem(Icons.person_outline, 'Profile', false),
+            ),
           ],
         ),
       ),
@@ -284,44 +304,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _categoryCard(String title, String emoji) {
     return GestureDetector(
-    onTap: () {
-  setState(() {
-    if (title == 'General') {
-      _searchQuery = 'general';
-    } else if (title == 'Dental') {
-      _searchQuery = 'dent';
-    } else if (title == 'Skin') {
-      _searchQuery = 'derma';
-    } else if (title == 'Heart') {
-      _searchQuery = 'cardio';
-    } else if (title == 'Child') {
-      _searchQuery = 'pediatr';
-    } else if (title == 'Eye') {
-      _searchQuery = 'eye';
-    } else {
-      _searchQuery = title.toLowerCase();
-    }
-  });
-    },
-    child: Container(
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, 2))
-        ],
+      onTap: () {
+        setState(() {
+          if (title == 'General') {
+            _searchQuery = 'general';
+          } else if (title == 'Dental') {
+            _searchQuery = 'dent';
+          } else if (title == 'Skin') {
+            _searchQuery = 'derma';
+          } else if (title == 'Heart') {
+            _searchQuery = 'cardio';
+          } else if (title == 'Child') {
+            _searchQuery = 'pediatr';
+          } else if (title == 'Eye') {
+            _searchQuery = 'eye';
+          } else {
+            _searchQuery = title.toLowerCase();
+          }
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: Colors.grey.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, 2))
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 26)),
+            const SizedBox(height: 4),
+            Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+          ],
+        ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 26)),
-          const SizedBox(height: 4),
-          Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-        ],
-      ),
-    ));
+    );
   }
 
   Widget _doctorCard(String name, String specialty, String rating, String patients, BuildContext context) {
