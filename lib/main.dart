@@ -25,7 +25,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const SplashScreen(),
+      home: StreamBuilder<User?>(
+  stream: FirebaseAuth.instance.authStateChanges(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const SplashScreen();
+    }
+    if (snapshot.hasData) {
+      return const HomeScreen();
+    }
+    return const LoginScreen();
+  },
+),
     );
   }
 }
